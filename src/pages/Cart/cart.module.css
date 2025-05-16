@@ -9,8 +9,7 @@
 }
 .cart_product{
     display: flex;
-    gap: 10px
-    ;
+    gap: 10px;
 }
 .btn_container{
     display: flex;
@@ -30,16 +29,13 @@ border: none;
     background-color: #febd69;
 }
 
-
-
-
 .container div:not(.subtotal){
 height: auto !important;
 }
 .container img{
      width: 100px !important;
 }
-.cart_conainer {
+.cart_container {
   padding: 20px;
 }
 
