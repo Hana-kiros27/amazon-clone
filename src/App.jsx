@@ -50,8 +50,10 @@ function App() {
     });
 
     // Cleanup subscription on unmount
+    //Included a cleanup function to unsubscribe from the authentication listener when the component unmounts, preventing memory leaks.
     return () => unsubscribe();
-  }, [dispatch]);
+    // Added dispatch to the dependency array of the useEffect hook to ensure it updates correctly when the dispatch function changes.
+  }, []);
 
   return (
     <>

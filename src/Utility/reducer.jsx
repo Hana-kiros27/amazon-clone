@@ -1,5 +1,9 @@
 import { Type } from "./actiontype";
+   
 
+// Provide the Context:
+// Consume the Context:
+// Use useContext to access the context value in any child component.
 export const initialState = {
   basket: [],user:null
 };
