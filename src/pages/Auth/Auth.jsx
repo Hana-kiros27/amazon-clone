@@ -1,48 +1,126 @@
-import React from 'react'
-import classes from './signup.module.css'
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from "react";
+import classes from "./signup.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../../Utility/firebase";
+import { ClipLoader } from 'react-spinners';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
+import { DataContext } from "../../components/DataProvider/DataProvider";
+
 function Auth() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [{ user }, dispatch] = useContext(DataContext);
+  const [loading, setLoading] = useState({ signIn: false, signUp: false });
+  const navigate = useNavigate();
+
+  const authHandler = async (e) => {
+    e.preventDefault();
+
+    if (e.target.name === "sign in") {
+      setLoading((prev) => ({ ...prev, signIn: true }));
+      try {
+        const userInfo = await signInWithEmailAndPassword(auth, email, password);
+        dispatch({ type: 'SET_USER', user: userInfo.user });
+        setLoading((prev) => ({ ...prev, signIn: false }));
+        navigate('/');
+      } catch (err) {
+        setError(err.message); // Set the error message
+        setLoading((prev) => ({ ...prev, signIn: false }));
+        console.log(err);
+      }
+    } else {
+      setLoading((prev) => ({ ...prev, signUp: true }));
+      try {
+        const userInfo = await createUserWithEmailAndPassword(auth, email, password);
+        dispatch({ type: 'SET_USER', user: userInfo.user });
+        setLoading((prev) => ({ ...prev, signUp: false }));
+        navigate('/');
+      } catch (err) {
+        setError(err.message); // Set the error message
+        setLoading((prev) => ({ ...prev, signUp: false }));
+        console.log(err);
+      }
+    }
+  };
+
   return (
     <section className={classes.login}>
-      {/* logo */}
+      {/* Logo */}
       <Link to="/">
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/905px-Amazon_logo.svg.png?20250504041148"
-          alt=""
+          alt="Amazon Logo"
         />
       </Link>
-      {/* form  */}
-
+      {/* Form */}
       <div className={classes.login_container}>
-        <h1> Sign In</h1>
-        <form action="">
+        <h1>Sign In</h1>
+        <form onSubmit={authHandler}>
           <div>
-            <label for="email">Email</label>
-
-            <input type="email" id="email" />
+            <label htmlFor="email">Email</label>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              id="email"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              id="password"
+              required
+            />
           </div>
 
-          <div>
-            <label for="password">Password</label>
+          {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <input type="password" id="password" />
-          </div>
-
-<button className={classes.login_signinbutton}>Sign In</button>
-
-
-
+          {/* Display error */}
+          <button
+            name="sign in"
+            type="submit"
+            onClick={authHandler}
+            className={classes.login_signinbutton}
+          >
+            {loading.signIn ? (
+              <ClipLoader color='#000' size={15} />
+            ) : (
+              "Sign In"
+            )}
+          </button>
         </form>
-        {/* agreement */}
-        <p>
-          By signing iny your account the amazon. condition of use of terms .please see our privcy notice,our cookies notice and out interest.
-        </p>
-        {/* create acount  */}
-        <button className={classes.login_registerButton}>Create your Amazone Account</button>
 
+        {/* Agreement */}
+        <p>
+          By signing in to your account, you agree to the Amazon conditions of
+          use. Please see our privacy notice, cookies notice, and interest-based
+          ads.
+        </p>
+
+        {/* Create account */}
+        <button
+          name="sign up"
+          type="submit"
+          onClick={authHandler}
+          className={classes.login_registerButton}
+        >
+          {loading.signUp ? (
+            <ClipLoader color='#000' size={15} />
+          ) : (
+            "Create your Amazon Account"
+          )}
+        </button>
       </div>
     </section>
   );
 }
 
-export default Auth
+export default Auth;

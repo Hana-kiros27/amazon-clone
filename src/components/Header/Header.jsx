@@ -4,6 +4,7 @@ import classes from "./Header.module.css";
 import { BiCart } from "react-icons/bi";
 import { BsSearch } from "react-icons/bs";
 import { SlLocationPin } from "react-icons/sl";
+import {auth} from '../../Utility/firebase'
 import { useContext } from "react";
 import { DataContext } from "../DataProvider/DataProvider";
 import LowerHeader from "./LowerHeader";
@@ -11,7 +12,8 @@ import LowerHeader from "./LowerHeader";
 function Header() {
   // const [basket] = useContext(DataContext);
   const [state] = useContext(DataContext); // Correct destructuring
-  const basket = state.basket; // Access basket from state
+  const basket = state.basket;// Access basket from state
+  const user = state.user;
   const totalItem=basket?.reduce((amount,item)=>{
     return item.amount+amount},0)
   
@@ -44,12 +46,12 @@ function Header() {
 
             {/* searchbar section */}
             <div className={classes.search}>
-              <select name="" id="">
+              <select name="" id="" size={1.5}>
                 <option value="">All</option>
               </select>
               <input type="text" name="" id="" placeholder="search product" />
               {/* icon */}
-              <BsSearch size={25} />
+              <BsSearch size={20} />
             </div>
 
             {/* rightside */}
@@ -65,9 +67,26 @@ function Header() {
               </Link>
 
               {/* three components */}
-              <Link to="/auth">
-                <p>sign In</p>
-                <span> Account & Lists</span>
+              <Link to={!user && "/auth"}>
+              
+              <div>
+                {
+                  user?(
+                    <>
+                    <p>Hello {user?.email?.split('@')[0]}</p>
+                    <span onClick={()=>auth.signOut()}> Sign Out</span>
+</>
+                  ):(
+                    <>
+                    <p>Hello,sign In</p>
+                    <span> Account & Lists</span>
+                    </>
+                  )
+                
+                }
+           
+                </div>
+               
               </Link>
               {/* orders */}
               <Link to="/orders">
